@@ -260,7 +260,7 @@ Players.PlayerRemoving:Connect(function()
     updateHighestDisplay()
 end)
 
--- ===== PLAYER ESP =====
+-- ===== PLAYER ESP + VISIBILITY =====
 local localPlayer = Players.LocalPlayer
 local playerHighlights = {}
 
@@ -269,6 +269,23 @@ local function clearESP(player)
         playerHighlights[player]:Destroy()
         playerHighlights[player] = nil
     end
+end
+
+local function forceVisible(char)
+    for _, obj in ipairs(char:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.LocalTransparencyModifier = 0
+        elseif obj:IsA("Decal") then
+            obj.Transparency = 0
+        end
+    end
+    char.DescendantAdded:Connect(function(obj)
+        if obj:IsA("BasePart") then
+            obj.LocalTransparencyModifier = 0
+        elseif obj:IsA("Decal") then
+            obj.Transparency = 0
+        end
+    end)
 end
 
 local function addESP(player)
@@ -287,6 +304,7 @@ local function addESP(player)
         highlight.Parent = char
 
         playerHighlights[player] = highlight
+        forceVisible(char)
     end
 
     if player.Character then
